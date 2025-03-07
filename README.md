@@ -15,6 +15,9 @@ Each row contains: current hash (32 bits), sibling node (32 bits), flip or not (
 
 - The 32 last bits of the last row equals merkle root
 - Flip bit should always be binary
+TODO
+- For each row: final hash was created by hashing first 2 hashes
+- Final rows are duplicated if proof_len() is less than 4
 
 ## Tutorials
 
