@@ -1,18 +1,20 @@
 # Plonky3 Merkle Tree inclusion example
 
-## Input: hashed_leaf, inclusion path (hash + "flip" bit), merkle root
+This proves inclusion of a leaf hash in a merkle tree using Plonky3. 
 
-## Trace definition
-Each row contains:
-current hash, sibling node, flip or not, resulting hash
+## Program & Constraints
 
-Step 0: hash the leaf
-Then, for each node: fill out the row as described above
+Input: hashed_leaf, inclusion path (hash + "flip" bit), merkle root.
 
-## Constraints
+Verifies that hashed leaf is indeed part of the merkle tree. 
 
-- The 4th element of the last row equals merkle root
-- flip bit should always be binary
+### Trace definition
+Each row contains: current hash (32 bits), sibling node (32 bits), flip or not (1 bit), resulting hash (32 bits). 
+
+### Constraints
+
+- The 32 last bits of the last row equals merkle root
+- Flip bit should always be binary
 
 ## Tutorials
 
