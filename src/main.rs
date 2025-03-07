@@ -45,11 +45,14 @@ impl<AB: AirBuilder> Air<AB> for MmrAir {
 
         builder.assert_bool(local[64]); // the flip bit of the inclusion path
 
-        // // when last row check the last 32 bits with the 32 bits of merkle_root
-        // for i in 0..32 {
-        //   let merkle_root_hash_bit = AB::Expr::from_canonical_u8(self.merkle_root[i].into());
-        //   builder.when_last_row().assert_eq(local[32*2+1+i], merkle_root_hash_bit);
-        // }
+        // when last row check the last 32 bits with the 32 bits of merkle_root
+        for i in 0..32 {
+            let merkle_root_hash_bit = AB::Expr::from_canonical_u8(self.merkle_root[i].into());
+            // with the minimum of 4 rows for CirclePcs, `when_last_row` is not correct anymore
+            builder
+                .when_last_row()
+                .assert_eq(local[64 + 1 + i], merkle_root_hash_bit);
+        }
     }
 }
 
@@ -111,9 +114,11 @@ pub fn generate_inclusion_trace<F: Field>(
     // Convert the collected u8 values into field elements
     let mut values_f: Vec<F> = values.iter().map(|&x| F::from_canonical_u8(x)).collect();
 
-    if nr_rows > inclusion_proof.len() {
-        for _ in 0..97 * (nr_rows - inclusion_proof.len()) {
-            values_f.push(F::zero());
+    let extra_rows = nr_rows - inclusion_proof.len();
+    for _ in 0..extra_rows {
+        // repeat the last row in the potentially extra rows (needed because of pcs)
+        for i in 0..97 {
+            values_f.push(values_f[(inclusion_proof.len() - 1) * 97 + i]);
         }
     }
 
